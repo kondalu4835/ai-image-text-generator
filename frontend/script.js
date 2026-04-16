@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = "https://ai-backend-6lru.onrender.com";
 
 async function enhanceText() {
   document.getElementById("loadingText").style.display = "block";
