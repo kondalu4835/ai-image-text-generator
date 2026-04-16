@@ -30,13 +30,14 @@ async function generateImage() {
 
   const data = await res.json();
 
-  // 🔥 HANDLE ERROR
+  // 🔴 ADD THIS BLOCK HERE
   if (data.error) {
     alert(data.error);
     document.getElementById("loadingImage").style.display = "none";
     return;
   }
 
+  // ✅ SUCCESS
   document.getElementById("generatedImage").src = data.image;
 
   document.getElementById("loadingImage").style.display = "none";

@@ -55,9 +55,9 @@ app.post("/generate-image", async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    const callHF = async () => {
+    const generate = async () => {
       return await axios({
-        url: "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+        url: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
@@ -69,34 +69,35 @@ app.post("/generate-image", async (req, res) => {
       });
     };
 
-    let response = await callHF();
+    let response = await generate();
     let contentType = response.headers["content-type"] || "";
 
-    // 🔁 If model loading → wait and retry
+    // 🔁 HANDLE LOADING
     if (contentType.includes("application/json")) {
       const json = JSON.parse(Buffer.from(response.data).toString("utf-8"));
 
       console.log("HF RESPONSE:", json);
 
-      if (json.error && json.error.includes("loading")) {
-        console.log("⏳ Model loading... retrying in 20s");
+      if (json.error && json.error.toLowerCase().includes("loading")) {
+        console.log("⏳ Model loading... retrying in 30 sec");
 
-        await new Promise(r => setTimeout(r, 20000)); // wait 20 sec
-        response = await callHF();
+        await new Promise(r => setTimeout(r, 30000));
+
+        response = await generate();
         contentType = response.headers["content-type"] || "";
       } else {
         return res.status(500).json({ error: json.error });
       }
     }
 
-    // ❌ HTML error
+    // ❌ BLOCKED / HTML ERROR
     if (contentType.includes("text/html")) {
       return res.status(500).json({
-        error: "Hugging Face blocked request (API key/model issue)"
+        error: "Hugging Face blocked request. Try again in few seconds."
       });
     }
 
-    // ✅ Success
+    // ✅ SUCCESS
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     const image = `data:image/png;base64,${base64}`;
 
@@ -104,9 +105,12 @@ app.post("/generate-image", async (req, res) => {
 
   } catch (error) {
     console.log("HF ERROR:", error.response?.data || error.message);
-    res.status(500).json({ error: "Image generation failed" });
+    res.status(500).json({
+      error: "Image generation failed. Please retry."
+    });
   }
 });
+
 
 
 
