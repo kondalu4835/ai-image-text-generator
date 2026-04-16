@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>AI Text & Image Generator</h1>
+
+<div class="box">
+  <h2>Text to Image</h2>
+
+  <textarea id="inputText" placeholder="Enter prompt..."></textarea>
+
+  <button onclick="enhanceText()">Enhance</button>
+  <p id="loadingText" style="display:none;">Enhancing...</p>
+
+  <p id="enhancedText"></p>
+
+  <button onclick="generateImage()">Generate Image</button>
+  <p id="loadingImage" style="display:none;">Generating image...</p>
+
+  <img id="generatedImage" />
+</div>
+
+<div class="box">
+  <h2>Image Analysis</h2>
+
+  <input type="text" id="imageUrl" placeholder="Paste image URL">
+
+  <button onclick="analyzeImage()">Analyze</button>
+  <p id="loadingAnalysis" style="display:none;">Analyzing...</p>
+
+  <p id="imageDescription"></p>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
